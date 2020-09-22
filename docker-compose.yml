@@ -49,6 +49,8 @@ services:
       POSTGRES_USER: postgres
     networks:
       - app-network
+    volumes:
+      - postgres:/data/postgres
       
 #Docker Networks
 networks:
@@ -57,4 +59,5 @@ networks:
 
 volumes:
   letsencrypt:
+  postgres:
         
