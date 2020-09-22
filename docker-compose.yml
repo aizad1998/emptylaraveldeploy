@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+    image: digitalocean.com/php
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./src/:/var/www
+      - ./src/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  #Nginx Service
+  webserver:
+    image: staticfloat/nginx-certbot
+    container_name: webserverwcert
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CERTBOT_EMAIL: aizad1998@gmail.com
+    volumes:
+      - ./src/:/var/www
+      - ./nginx/conf.d/:/etc/nginx/user.conf.d:ro
+      - letsencrypt:/etc/letsencrypt
+    networks:
+      - app-network
+
+  #PostgreSQL Service
+  db:
+    image: postgres:alpine
+    container_name: db
+    restart: unless-sstopped
+    environment:
+      POSTGRES_PASSWORD: flyingBat625
+      POSTGRES_USER: postgres
+    networks:
+      - app-network
+      
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  letsencrypt:
+        
